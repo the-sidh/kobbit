@@ -3,12 +3,12 @@ package com.github.the_sidh.kobbit
 import kotlin.reflect.KFunction
 
 data class State(
-    val status: Status,
+    val executionStatus: ExecutionStatus,
     val node: Node?,
     val context: Context
 )
 
-enum class Status { RUNNING, COMPLETED }
+enum class ExecutionStatus { RUNNING, COMPLETED }
 
 enum class Outcome { SUCCESS, FAILURE, UNKNOWN }
 

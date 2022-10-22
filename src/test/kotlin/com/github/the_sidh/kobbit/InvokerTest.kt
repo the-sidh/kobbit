@@ -29,7 +29,7 @@ class InvokerTest {
     )
 
     private val state = State(
-        status = Status.RUNNING,
+        executionStatus = ExecutionStatus.RUNNING,
         node = rootNode,
         context = mapOf("outcome" to Outcome.SUCCESS)
     )
@@ -113,7 +113,7 @@ class InvokerTest {
     @Test
     fun `given that there are no more nodes, should return a state with status equals to completed`() {
         val expectedState = State(
-            status = Status.COMPLETED,
+            executionStatus = ExecutionStatus.COMPLETED,
             node = null,
             context = mapOf("outcome" to Outcome.SUCCESS)
         )

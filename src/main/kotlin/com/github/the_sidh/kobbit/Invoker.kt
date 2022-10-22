@@ -6,24 +6,28 @@ const val UNKNOWN_OUTCOME_EXCEPTION_MESSAGE = "Unknown outcome for command execu
 
 fun invoke(state: State): State {
     return state.node?.let { node ->
-        val newState = when (runCommand(node, state.context)) {
-            Outcome.SUCCESS -> state.copy(node = node.nextOnSuccess)
-            Outcome.FAILURE -> stateOnFailure(node, state)
-            else -> throw SagaException(UNKNOWN_OUTCOME_EXCEPTION_MESSAGE)
-        }
+        val newState =
+            when (runCommand(node, state.context)) {
+                Outcome.SUCCESS -> stateOnSuccess(state, node)
+                Outcome.FAILURE -> stateOnFailure(node, state)
+                else -> throw SagaException(UNKNOWN_OUTCOME_EXCEPTION_MESSAGE)
+            }
         postExecutionState(newState)
-    } ?: state.copy(status = Status.COMPLETED)
+    } ?: state.copy(executionStatus = ExecutionStatus.COMPLETED)
 }
 
-private fun runCommand(node: Node, context: Context) : Outcome{
-    val command = node.command
-    return command.call(context)
-}
+private fun runCommand(node: Node, context: Context): Outcome = node.command.call(context)
 
-private fun postExecutionState(newState: State) = if (newState.node != null)
-    newState
-else
-    newState.copy(status = Status.COMPLETED)
+private fun postExecutionState(newState: State) =
+    if (newState.node != null)
+        newState
+    else
+        newState.copy(executionStatus = ExecutionStatus.COMPLETED)
+
+private fun stateOnSuccess(
+    state: State,
+    node: Node
+) = state.copy(node = node.nextOnSuccess)
 
 private fun stateOnFailure(
     node: Node,
